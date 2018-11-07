@@ -5,7 +5,7 @@ output: md_document
 # oomycetedbtools 
 
 This is an R package for some of the code used to keep `oomycetedb.org` up to date.
-** This is not a general-use package, ** but you are free to use it and adapt it.
+**This is not a general-use package,** but you are free to use it and adapt it.
 
 ## Updating the website
 
@@ -17,7 +17,7 @@ The `update_website` function is run each night at 1am using the following [cron
 
 For this to work this package must be installed in R on the system using the following command:
 
-```{r}
+```{r eval=FALSE}
 devtools::install_github("grunwaldlab/oomycetedbtools")
 ```
 
