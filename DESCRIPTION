@@ -1,0 +1,14 @@
+Package: oomycetedbtools
+Type: Package
+Title: Tools for managing the OomyceteDB website and database
+Version: 0.1.0
+Author: Zachary SL Foster
+Maintainer: Zachary Foster <zacharyfoster1989@gmail.com>
+Description: Provides functions to update the OomyceteDB website/database and other such tasks 
+License: GPL version 3 or any later version
+Encoding: UTF-8
+LazyData: true
+Imports: googledrive,
+    googlesheets
+RoxygenNote: 6.1.0
+Roxygen: list(markdown = TRUE)
