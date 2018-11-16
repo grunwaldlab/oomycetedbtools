@@ -6,6 +6,7 @@
 #'
 #' @export
 config <- list(
+  website_root = "/data/www/OomyceteDB/dev",
   googledrive_root_url = "https://drive.google.com/drive/u/1/folders/1XJLFW_S9EzVOGgHCqg42H88dNtD91gRq",
   release_spreadsheet_name = "releases",
   release_spreadsheet_path = "data/releases.csv",

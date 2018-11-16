@@ -16,6 +16,7 @@
 #' The defaults for all the parameters are stored in the `config` list, defined in
 #' "R/configuration.R". Typically, no parameters should need to be used.
 #'
+#' @param website_root The absolute path to the root folder of the website
 #' @param googledrive_root_url The url to the Google Drive folder containing database resoureces.
 #' @param release_spreadsheet_path The path (including the filename) to the version of the release
 #'   spreadsheet on the server releative to the root of the website directory.
@@ -29,7 +30,8 @@
 #' @param blast_path The path to the folder with blast executables
 #'
 #' @export
-update_website <- function(googledrive_root_url     = config$googledrive_root_url,
+update_website <- function(website_root             = config$website_root,
+                           googledrive_root_url     = config$googledrive_root_url,
                            release_spreadsheet_path = config$release_spreadsheet_path,
                            release_spreadsheet_name = config$release_spreadsheet_name,
                            local_release_dir        = config$local_release_dir,
@@ -42,12 +44,14 @@ update_website <- function(googledrive_root_url     = config$googledrive_root_ur
   googledrive::drive_auth_config(active = FALSE)
 
   # Update local spreadsheet using version on Google Drive
-  update_releases_spreadsheet(googledrive_root_url = googledrive_root_url,
+  update_releases_spreadsheet(website_root = website_root,
+                              googledrive_root_url = googledrive_root_url,
                               release_spreadsheet_path = release_spreadsheet_path,
                               release_spreadsheet_name = release_spreadsheet_name)
 
   # Check for new releases
-  release_data <- new_releases_data(googledrive_root_url = googledrive_root_url,
+  release_data <- new_releases_data(website_root = website_root,
+                                    googledrive_root_url = googledrive_root_url,
                                     release_spreadsheet_path = release_spreadsheet_path,
                                     local_release_dir = local_release_dir,
                                     release_name_prefix = release_name_prefix)
@@ -59,14 +63,14 @@ update_website <- function(googledrive_root_url     = config$googledrive_root_ur
 
     # Store a local copy of the database
     new_release_file_name <- paste0(release_name_prefix, release_data$release_number[index], ".fa")
-    new_release_file_path <- file.path(local_release_dir, new_release_file_name)
+    new_release_file_path <- file.path(website_root, local_release_dir, new_release_file_name)
     googledrive::drive_download(file = googledrive::as_id(release_data$drive_ids[index]),
                                 path = new_release_file_path)
 
     # Create a blast database for it
     make_blast_database(fasta_path = new_release_file_path,
-                        out_dir_path = blast_database_dir,
-                        blast_path = blast_path)
+                        out_dir_path = file.path(website_root, blast_database_dir),
+                        blast_path = file.path(website_root, blast_path))
 
   }
 
@@ -84,7 +88,8 @@ update_website <- function(googledrive_root_url     = config$googledrive_root_ur
 #' @return `NULL`
 #'
 #' @export
-update_releases_spreadsheet <- function(googledrive_root_url     = config$googledrive_root_url,
+update_releases_spreadsheet <- function(website_root             = config$website_root,
+                                        googledrive_root_url     = config$googledrive_root_url,
                                         release_spreadsheet_path = config$release_spreadsheet_path,
                                         release_spreadsheet_name = config$release_spreadsheet_name) {
 
@@ -102,7 +107,7 @@ update_releases_spreadsheet <- function(googledrive_root_url     = config$google
 
   # Download and overwrite local version of the spreadsheet
   googlesheets::gs_download(from = release_spreadsheet_obj,
-                            to = release_spreadsheet_path,
+                            to = file.path(website_root, release_spreadsheet_path),
                             overwrite = TRUE)
 }
 
@@ -117,22 +122,23 @@ update_releases_spreadsheet <- function(googledrive_root_url     = config$google
 #' @return tibble
 #'
 #' @export
-new_releases_data <- function(googledrive_root_url = config$googledrive_root_url,
+new_releases_data <- function(website_root             = config$website_root,
+                              googledrive_root_url     = config$googledrive_root_url,
                               release_spreadsheet_path = config$release_spreadsheet_path,
-                              local_release_dir   = config$local_release_dir,
-                              release_name_prefix = config$release_name_prefix) {
+                              local_release_dir        = config$local_release_dir,
+                              release_name_prefix      = config$release_name_prefix) {
 
   # Get list of files in Google Drive database folder
   drive_files <- googledrive::drive_ls(path = googledrive::as_id(googledrive_root_url))
 
   # Get the number codes for releases with FASTA files already on the server
-  local_release_names <- list.files(local_release_dir,
+  local_release_names <- list.files(file.path(website_root, local_release_dir),
                                     pattern = paste0(release_name_prefix, "[0-9]+\\.fa"))
   local_release_nums <- stringr::str_match(local_release_names,
                                            pattern = paste0(release_name_prefix, "([0-9]+)\\.fa"))[, 2]
 
   # Get the number code for releases on the releases spreadsheet
-  release_data <- get_release_data(release_spreadsheet_path)
+  release_data <- get_release_data(file.path(website_root, release_spreadsheet_path))
   remote_release_nums <- release_data$release_number
   new_release_indexes <- which(! remote_release_nums %in% local_release_nums)
 
