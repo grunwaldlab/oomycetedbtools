@@ -4,14 +4,18 @@
 \alias{update_website}
 \title{Update website}
 \usage{
-update_website(googledrive_root_url = config$googledrive_root_url,
+update_website(website_root = config$website_root,
+  googledrive_root_url = config$googledrive_root_url,
   release_spreadsheet_path = config$release_spreadsheet_path,
   release_spreadsheet_name = config$release_spreadsheet_name,
   local_release_dir = config$local_release_dir,
   release_name_prefix = config$release_name_prefix,
-  blast_database_dir = config$blast_database_dir)
+  blast_database_dir = config$blast_database_dir,
+  blast_path = config$blast_path)
 }
 \arguments{
+\item{website_root}{The absolute path to the root folder of the website}
+
 \item{googledrive_root_url}{The url to the Google Drive folder containing database resoureces.}
 
 \item{release_spreadsheet_path}{The path (including the filename) to the version of the release
@@ -27,6 +31,8 @@ releases on the server relative to the root of the website.}
 
 \item{blast_database_dir}{The path to the directoy containing the archived blast datbases for all
 releases on the server relative to the root of the website.}
+
+\item{blast_path}{The path to the folder with blast executables}
 }
 \description{
 Syncs the website with the information contained in the Google Drive folder.

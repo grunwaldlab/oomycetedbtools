@@ -4,12 +4,15 @@
 \alias{new_releases_data}
 \title{Get data on new releases}
 \usage{
-new_releases_data(googledrive_root_url = config$googledrive_root_url,
+new_releases_data(website_root = config$website_root,
+  googledrive_root_url = config$googledrive_root_url,
   release_spreadsheet_path = config$release_spreadsheet_path,
   local_release_dir = config$local_release_dir,
   release_name_prefix = config$release_name_prefix)
 }
 \arguments{
+\item{website_root}{The absolute path to the root folder of the website}
+
 \item{googledrive_root_url}{The url to the Google Drive folder containing database resoureces.}
 
 \item{release_spreadsheet_path}{The path (including the filename) to the version of the release

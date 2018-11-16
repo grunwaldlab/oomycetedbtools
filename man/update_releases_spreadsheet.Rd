@@ -4,12 +4,14 @@
 \alias{update_releases_spreadsheet}
 \title{Update release spreadsheet}
 \usage{
-
-  update_releases_spreadsheet(googledrive_root_url = config$googledrive_root_url,
+update_releases_spreadsheet(website_root = config$website_root,
+  googledrive_root_url = config$googledrive_root_url,
   release_spreadsheet_path = config$release_spreadsheet_path,
   release_spreadsheet_name = config$release_spreadsheet_name)
 }
 \arguments{
+\item{website_root}{The absolute path to the root folder of the website}
+
 \item{googledrive_root_url}{The url to the Google Drive folder containing database resoureces.}
 
 \item{release_spreadsheet_path}{The path (including the filename) to the version of the release

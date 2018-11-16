@@ -24,3 +24,59 @@ get_latest_release_fa <- function() {
 has_internet <- function(){
   !is.null(curl::nslookup("r-project.org", error = FALSE))
 }
+
+
+
+#' Read a FASTA file
+#'
+#' Reads a FASTA file. This is the FASTA parser for metacoder. It simply tries
+#' to read a FASTA file into a named character vector with minimal fuss. It does
+#' not do any checks for valid characters etc. Other FASTA parsers you might
+#' want to consider include \code{\link[ape]{read.FASTA}} or
+#' \code{\link[seqinr]{read.fasta}}.
+#'
+#' @param file_path (\code{character} of length 1) The path to a file to read.
+#'
+#' @return named \code{character} vector
+#'
+#' @examples
+#'
+#' # Get example FASTA file
+#' fasta_path <- system.file(file.path("extdata", "silva_subset.fa"),
+#'                           package = "metacoder")
+#'
+#' # Read fasta file
+#' my_seqs <- read_fasta(fasta_path)
+#'
+#' @export
+read_fasta <- function(file_path) {
+  # Read raw string
+  raw_data <- readr::read_file(file_path)
+
+  # Return an empty vector an a warning if no sequences are found
+  if (raw_data == "") {
+    warning(paste0("No sequences found in the file: ", file_path))
+    return(character(0))
+  }
+
+  # Find location of every header start
+  split_data <- stringr::str_split(raw_data, pattern = "\n>", simplify = TRUE)
+
+  # Split the data for each sequence into lines
+  split_data <- stringr::str_split(split_data, pattern = "\n")
+
+  # The first lines are headers, so remvove those
+  headers <- vapply(split_data, FUN = `[`, FUN.VALUE = character(1), 1)
+  split_data <- lapply(split_data, FUN = `[`, -1)
+
+  # Remove the > from the first sequence. The others were removed by the split
+  headers[1] <- sub(headers[1], pattern = "^>", replacement = "")
+
+  # Combine multiple lines into single sequences
+  seqs <- vapply(split_data, FUN = paste0, FUN.VALUE = character(1), collapse = "")
+
+  # Combine and return results
+  return(stats::setNames(seqs, headers))
+}
+
+

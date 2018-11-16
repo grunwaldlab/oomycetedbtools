@@ -177,7 +177,7 @@ make_blast_database <- function(fasta_path, out_dir_path, blast_path = config$bl
 
   # Make temporary version of the database with indexes instead of full headers
   #   This is needed because BLAST will not return header info after the first space..
-  ref_seqs <- metacoder::read_fasta(fasta_path)
+  ref_seqs <- read_fasta(fasta_path)
   names(ref_seqs) <- as.character(seq_along(ref_seqs))
   temp_database_path <- tempfile()
   readr::write_lines(paste0(">", names(ref_seqs), "\n", ref_seqs), temp_database_path)

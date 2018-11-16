@@ -9,6 +9,10 @@ License: GPL version 3 or any later version
 Encoding: UTF-8
 LazyData: true
 Imports: googledrive,
-    googlesheets
+    googlesheets,
+    readr,
+    tools,
+    stringr,
+    taxa
 RoxygenNote: 6.1.0
 Roxygen: list(markdown = TRUE)

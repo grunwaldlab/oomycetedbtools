@@ -4,12 +4,15 @@
 \alias{make_blast_database}
 \title{Make a BLAST database}
 \usage{
-make_blast_database(fasta_path, out_dir_path)
+make_blast_database(fasta_path, out_dir_path,
+  blast_path = config$blast_path)
 }
 \arguments{
 \item{fasta_path}{The path to the FASTA file to use to make the database from.}
 
 \item{out_dir_path}{The path to the directory to store the BLAST database in.}
+
+\item{blast_path}{The path to the folder with blast executables}
 }
 \value{
 \code{NULL}
