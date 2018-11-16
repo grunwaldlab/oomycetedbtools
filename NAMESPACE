@@ -2,6 +2,7 @@
 
 export(config)
 export(get_release_data)
+export(init_database)
 export(make_blast_database)
 export(new_releases_data)
 export(update_releases_spreadsheet)

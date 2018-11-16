@@ -26,6 +26,7 @@
 #' @param release_name_prefix Text added to the begining of the archived FASTA files on the server.
 #' @param blast_database_dir The path to the directoy containing the archived blast datbases for all
 #'   releases on the server relative to the root of the website.
+#' @param blast_path The path to the folder with blast executables
 #'
 #' @export
 update_website <- function(googledrive_root_url     = config$googledrive_root_url,
@@ -33,7 +34,8 @@ update_website <- function(googledrive_root_url     = config$googledrive_root_ur
                            release_spreadsheet_name = config$release_spreadsheet_name,
                            local_release_dir        = config$local_release_dir,
                            release_name_prefix      = config$release_name_prefix,
-                           blast_database_dir       = config$blast_database_dir) {
+                           blast_database_dir       = config$blast_database_dir,
+                           blast_path               = config$blast_path) {
 
   # Turn off authentication for google drive
   # This is to avoid entering in a password manually
@@ -46,22 +48,25 @@ update_website <- function(googledrive_root_url     = config$googledrive_root_ur
 
   # Check for new releases
   release_data <- new_releases_data(googledrive_root_url = googledrive_root_url,
+                                    release_spreadsheet_path = release_spreadsheet_path,
                                     local_release_dir = local_release_dir,
                                     release_name_prefix = release_name_prefix)
 
 
   # Process new releases
-  message('Adding ', length(new_release_indexes), ' releases.')
+  message('Adding ', nrow(release_data), ' releases.')
   make_one_release <- function(index) {
 
     # Store a local copy of the database
     new_release_file_name <- paste0(release_name_prefix, release_data$release_number[index], ".fa")
     new_release_file_path <- file.path(local_release_dir, new_release_file_name)
-    googledrive::drive_download(file = as_id(release_data$drive_ids[index]),
+    googledrive::drive_download(file = googledrive::as_id(release_data$drive_ids[index]),
                                 path = new_release_file_path)
 
     # Create a blast database for it
-    make_blast_database(fasta_path = new_release_file_path, out_dir_path = blast_database_dir)
+    make_blast_database(fasta_path = new_release_file_path,
+                        out_dir_path = blast_database_dir,
+                        blast_path = blast_path)
 
   }
 
@@ -84,7 +89,7 @@ update_releases_spreadsheet <- function(googledrive_root_url     = config$google
                                         release_spreadsheet_name = config$release_spreadsheet_name) {
 
   # Get list of files in Google Drive database folder
-  drive_files <- googledrive::drive_ls(path = as_id(googledrive_root_url))
+  drive_files <- googledrive::drive_ls(path = googledrive::as_id(googledrive_root_url))
 
   # Get file id from name
   if (! release_spreadsheet_name %in% drive_files$name) {
@@ -113,11 +118,12 @@ update_releases_spreadsheet <- function(googledrive_root_url     = config$google
 #'
 #' @export
 new_releases_data <- function(googledrive_root_url = config$googledrive_root_url,
+                              release_spreadsheet_path = config$release_spreadsheet_path,
                               local_release_dir   = config$local_release_dir,
                               release_name_prefix = config$release_name_prefix) {
 
   # Get list of files in Google Drive database folder
-  drive_files <- googledrive::drive_ls(path = as_id(googledrive_root_url))
+  drive_files <- googledrive::drive_ls(path = googledrive::as_id(googledrive_root_url))
 
   # Get the number codes for releases with FASTA files already on the server
   local_release_names <- list.files(local_release_dir,
@@ -131,7 +137,7 @@ new_releases_data <- function(googledrive_root_url = config$googledrive_root_url
   new_release_indexes <- which(! remote_release_nums %in% local_release_nums)
 
   # Get the names of the FASTA file for each release
-  new_releases <- release_data[new_release_indexes]
+  new_releases <- release_data[new_release_indexes, ]
 
   # Check that fasta files exist on Google Drive
   invalid_releases <- new_releases$source_file[! new_releases$source_file %in% drive_files$name]
@@ -156,11 +162,12 @@ new_releases_data <- function(googledrive_root_url = config$googledrive_root_url
 #'
 #' @param fasta_path The path to the FASTA file to use to make the database from.
 #' @param out_dir_path The path to the directory to store the BLAST database in.
+#' @inheritParams update_website
 #'
 #' @return `NULL`
 #'
 #' @export
-make_blast_database <- function(fasta_path, out_dir_path) {
+make_blast_database <- function(fasta_path, out_dir_path, blast_path = config$blast_path) {
 
   # Make temporary version of the database with indexes instead of full headers
   #   This is needed because BLAST will not return header info after the first space..
@@ -172,7 +179,7 @@ make_blast_database <- function(fasta_path, out_dir_path) {
   # Make blast database with temporary file
   blast_db_name <- tools::file_path_sans_ext(basename(fasta_path))
   blast_db_path <- file.path(out_dir_path, blast_db_name)
-  makeblastdb_command <- paste("makeblastdb",
+  makeblastdb_command <- paste(file.path(blast_path, "makeblastdb"),
                                "-in", temp_database_path,
                                "-parse_seqids",
                                "-dbtype nucl",

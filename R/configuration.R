@@ -11,5 +11,6 @@ config <- list(
   release_spreadsheet_path = "data/releases.csv",
   release_name_prefix = "release_",
   local_release_dir = "data/releases",
-  blast_database_dir = "data/blast_databases"
+  blast_database_dir = "data/blast_databases",
+  blast_path = "shiny_apps/blast/blast/bin"
 )

@@ -5,11 +5,15 @@
 \title{Get data on new releases}
 \usage{
 new_releases_data(googledrive_root_url = config$googledrive_root_url,
+  release_spreadsheet_path = config$release_spreadsheet_path,
   local_release_dir = config$local_release_dir,
   release_name_prefix = config$release_name_prefix)
 }
 \arguments{
 \item{googledrive_root_url}{The url to the Google Drive folder containing database resoureces.}
+
+\item{release_spreadsheet_path}{The path (including the filename) to the version of the release
+spreadsheet on the server releative to the root of the website directory.}
 
 \item{local_release_dir}{The path to the directoy containing the archived FASTA files for all
 releases on the server relative to the root of the website.}
