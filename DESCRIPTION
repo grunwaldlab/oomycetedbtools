@@ -8,11 +8,14 @@ Description: Provides functions to update the OomyceteDB website/database and ot
 License: GPL version 3 or any later version
 Encoding: UTF-8
 LazyData: true
-Imports: googledrive,
+Imports: 
+    googledrive,
     googlesheets,
     readr,
     tools,
     stringr,
-    taxa
+    taxa,
+    rentrez,
+    tibble
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
