@@ -102,7 +102,7 @@ get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features =
     if (is.null(isolate)) {
       query <- paste0('"', name, '"[Organism] AND (', paste0('"', genes, '"[All Fields]', collapse = " OR "), ')')
     } else {
-      query <- paste0('"', name, '"[Organism] AND "', isolate, '"[Isolate] AND (', paste0('"', genes, '"[All Fields]', collapse = " OR "), ')')
+      query <- paste0('"', name, '"[Organism] AND ("', isolate, '"[Isolate] OR "', isolate, '"[Strain]) AND (', paste0('"', genes, '"[All Fields]', collapse = " OR "), ')')
     }
     search <- rentrez::entrez_search(db, term = query, ...)
     if (length(search$ids) == 0) {
