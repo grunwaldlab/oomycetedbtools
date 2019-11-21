@@ -44,17 +44,23 @@ parse_seqs <- function(text) {
 #'
 #' @param species The names of species to look up.
 #' @param genes The names of the genes to look up.
-#' @param isolates The names of isolates to look up. Must be the same length as \code{species} if used.
+#' @param isolates The names of isolates to look up. Must be the same length as \code{species} if
+#'   used.
 #' @param extract_features If TRUE, return the sequence for each feature in the sequence annotation
 #'   instead of the whole sequence.
 #' @param gene_name_in_feature If TRUE, only return features that have one of the gene names
 #'   somewhere in their description. Only has an effect if extract_features is TRUE.
+#' @param flanking A vector of length 2. The number of base pairs before and after the target gene
+#'   to include in the sequence returned. If the flanking sequence is not available, the sequence
+#'   will be considered incomplete.
 #' @param db The name of the NCBI database to query. Only tested with "nucleotide", but a few others
 #'   might work.
 #' @param pause The number of seconds to pause between each query. This avoids annoying NCBI and
 #'   having them block you IP address. Should be at least 0.35 seconds if you dont have an NCBI API
 #'   key and at least 0.1 seconds if you do.
-#' @param ... Additional terms to add to the search request for each species/isolate, see NCBI documentation for a complete list: http://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_ESearch_
+#' @param ... Additional terms to add to the search request for each species/isolate, see NCBI
+#'   documentation for a complete list:
+#'   http://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_ESearch_
 #'
 #' @return A table
 #'
@@ -91,7 +97,11 @@ parse_seqs <- function(text) {
 #' }
 #'
 #' @export
-get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features = FALSE, gene_name_in_feature = TRUE, db = "nucleotide", pause = 0.5, ...) {
+get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features = FALSE, gene_name_in_feature = TRUE, flanking = c(0, 0), db = "nucleotide", pause = 0.5, ...) {
+
+  if (! is.numeric(flanking) || length(flanking) != 2) {
+    stop('The "flanking" option must be a numeric vector of length 2')
+  }
 
   get_one <- function(name, isolate = NULL) {
 
@@ -128,8 +138,19 @@ get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features =
       # Join feature and sequence data
       output <- dplyr::left_join(features, sequences, by = "acc")
 
+      # Get positions to return
+      output$flank_start <- purrr::map2_dbl(output$start, output$end, function(x, y) {
+        min(c(x, y)) - flanking[1]
+      })
+      output$flank_end <- purrr::map2_dbl(output$start, output$end, function(x, y) {
+        max(c(x, y)) + flanking[2]
+      })
+      output$flank_complete <- output$complete & output$flank_start >= 1 & output$flank_end <= nchar(output$seq)
+      output$flank_start[output$flank_start < 1] <- 1
+      output$flank_end[output$flank_end > nchar(output$seq)] <- nchar(output$seq)[output$flank_end > nchar(output$seq)]
+
       # Subset sequences to fetures
-      output$seq <- substr(output$seq, output$start, output$end)
+      output$seq <- substr(output$seq, output$flank_start, output$flank_end)
       output$length <- nchar(output$seq)
 
     } else {

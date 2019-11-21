@@ -6,20 +6,25 @@
 \usage{
 get_isolate_seqs(species, genes, isolates = NULL,
   extract_features = FALSE, gene_name_in_feature = TRUE,
-  db = "nucleotide", pause = 0.5, ...)
+  flanking = c(0, 0), db = "nucleotide", pause = 0.5, ...)
 }
 \arguments{
 \item{species}{The names of species to look up.}
 
 \item{genes}{The names of the genes to look up.}
 
-\item{isolates}{The names of isolates to look up. Must be the same length as \code{species} if used.}
+\item{isolates}{The names of isolates to look up. Must be the same length as \code{species} if
+used.}
 
 \item{extract_features}{If TRUE, return the sequence for each feature in the sequence annotation
 instead of the whole sequence.}
 
 \item{gene_name_in_feature}{If TRUE, only return features that have one of the gene names
 somewhere in their description. Only has an effect if extract_features is TRUE.}
+
+\item{flanking}{A vector of length 2. The number of base pairs before and after the target gene
+to include in the sequence returned. If the flanking sequence is not available, the sequence
+will be considered incomplete.}
 
 \item{db}{The name of the NCBI database to query. Only tested with "nucleotide", but a few others
 might work.}
@@ -28,7 +33,9 @@ might work.}
 having them block you IP address. Should be at least 0.35 seconds if you dont have an NCBI API
 key and at least 0.1 seconds if you do.}
 
-\item{...}{Additional terms to add to the search request for each species/isolate, see NCBI documentation for a complete list: http://www.ncbi.nlm.nih.gov/books/NBK25499/#\emph{chapter4_ESearch}}
+\item{...}{Additional terms to add to the search request for each species/isolate, see NCBI
+documentation for a complete list:
+http://www.ncbi.nlm.nih.gov/books/NBK25499/#\emph{chapter4_ESearch}}
 }
 \value{
 A table
