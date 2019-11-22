@@ -38,7 +38,27 @@ documentation for a complete list:
 http://www.ncbi.nlm.nih.gov/books/NBK25499/#\emph{chapter4_ESearch}}
 }
 \value{
-A table
+A tibble (a type of data.frame) with the following columns, depending on settings:
+\itemize{
+\item species: The species search term associated with the result
+\item isolate: The isolate search term associated with the result
+\item query: The query used to search for sequences on NCBI
+\item acc: The Genbank accession number
+\item start: The index of the first base pair of the target gene in the original sequence
+\item end: The index of the last base pair of the target gene in the original sequence
+\item feature: The type of locus
+\item type: The type of annotation for the sequence
+\item name: The name of the locus
+\item complete: If the locus was complete in the original sequence, according to the annotation
+\item seq: The whole sequence the gene was found in
+\item header: The name of the overall sequence the gene was found in
+\item length: The length of the whole sequence
+\item flank_start: The index of the first base pair of the target gene plus the flanking region in the original sequence
+\item flank_end: The index of the last base pair of the target gene plus the flanking region in the original sequence
+\item flank_complete: If the locus plus flanking region was complete in the original sequence
+\item gene_seq: The target gene sequence plus the flanking region
+\item gene_length: The length of the target gene plus the flanking region
+}
 }
 \description{
 Look for sequences of a particular gene for a list of species/isolates/genes from the Genbank
@@ -75,6 +95,16 @@ get_isolate_seqs(species = c("Phytophthora infestans", "Phytophthora infestans",
                  isolates = c("44", "580", "180"),
                  genes = c("cox I", "cox 1", "cox1", "coxI", "cytochrome oxidase I", "cytochrome oxidase 1"),
                  extract_features = TRUE)
+
+# Search for P infestans ITS with flanking regions and subset for complete results
+result <- get_isolate_seqs(species = c("Phytophthora"),
+                           genes = c("internal transcribed spacer"),
+                           retmax = 300,
+                           extract_features = TRUE,
+                           flanking = c(300, 300))
+result[result$complete, ]
+result[result$flank_complete, ]
+
 }
 
 }

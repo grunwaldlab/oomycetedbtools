@@ -62,7 +62,28 @@ parse_seqs <- function(text) {
 #'   documentation for a complete list:
 #'   http://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_ESearch_
 #'
-#' @return A table
+#' @return
+#'
+#' A tibble (a type of data.frame) with the following columns, depending on settings:
+#'
+#' * species: The species search term associated with the result
+#' * isolate: The isolate search term associated with the result
+#' * query: The query used to search for sequences on NCBI
+#' * acc: The Genbank accession number
+#' * start: The index of the first base pair of the target gene in the original sequence
+#' * end: The index of the last base pair of the target gene in the original sequence
+#' * feature: The type of locus
+#' * type: The type of annotation for the sequence
+#' * name: The name of the locus
+#' * complete: If the locus was complete in the original sequence, according to the annotation
+#' * seq: The whole sequence the gene was found in
+#' * header: The name of the overall sequence the gene was found in
+#' * length: The length of the whole sequence
+#' * flank_start: The index of the first base pair of the target gene plus the flanking region in the original sequence
+#' * flank_end: The index of the last base pair of the target gene plus the flanking region in the original sequence
+#' * flank_complete: If the locus plus flanking region was complete in the original sequence
+#' * gene_seq: The target gene sequence plus the flanking region
+#' * gene_length: The length of the target gene plus the flanking region
 #'
 #' @examples \dontrun{
 #'
@@ -94,10 +115,22 @@ parse_seqs <- function(text) {
 #'                  isolates = c("44", "580", "180"),
 #'                  genes = c("cox I", "cox 1", "cox1", "coxI", "cytochrome oxidase I", "cytochrome oxidase 1"),
 #'                  extract_features = TRUE)
+#'
+#' # Search for P infestans ITS with flanking regions and subset for complete results
+#' result <- get_isolate_seqs(species = c("Phytophthora"),
+#'                            genes = c("internal transcribed spacer"),
+#'                            retmax = 300,
+#'                            extract_features = TRUE,
+#'                            flanking = c(300, 300))
+#' result[result$complete, ]
+#' result[result$flank_complete, ]
+#'
 #' }
 #'
 #' @export
-get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features = FALSE, gene_name_in_feature = TRUE, flanking = c(0, 0), db = "nucleotide", pause = 0.5, ...) {
+get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features = FALSE,
+                             gene_name_in_feature = TRUE, flanking = c(0, 0),
+                             db = "nucleotide", pause = 0.5, ...) {
 
   if (! is.numeric(flanking) || length(flanking) != 2) {
     stop('The "flanking" option must be a numeric vector of length 2')
@@ -150,8 +183,8 @@ get_isolate_seqs <- function(species, genes, isolates = NULL, extract_features =
       output$flank_end[output$flank_end > nchar(output$seq)] <- nchar(output$seq)[output$flank_end > nchar(output$seq)]
 
       # Subset sequences to fetures
-      output$seq <- substr(output$seq, output$flank_start, output$flank_end)
-      output$length <- nchar(output$seq)
+      output$gene_seq <- substr(output$seq, output$flank_start, output$flank_end)
+      output$gene_length <- nchar(output$gene_seq)
 
     } else {
       output <- parse_seqs(rentrez::entrez_fetch(db, id = search$ids, rettype = "fasta", retmode = "xml"))
