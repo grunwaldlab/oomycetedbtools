@@ -1,0 +1,61 @@
+---
+title: "Database update procedure"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Database update procedure}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The OomyceteDB database available to the public is released in discreet versions to allow for reproducible analyses.
+Therefore, in order to update the database, a new release must be made.
+These releases are derived from the spreadsheet file stored on Google Drive and stored in the `oomycetedbdata` package on Github.
+Once the source data for the database is ready for public use, the `release` function can be used to create a release.
+**In order to use the `release` function, the user will need permission to edit the  spreadsheet file stored on Google Drive and the `oomycetedbdata` repository on Github.**
+
+## Quickstart example
+
+Making a release requires very little R code by design.
+First, open up a R session. You can do this using RStudio or the command line / terminal.
+If you have not yet done it, install the `oomycetedbtools` package by copy and pasting the following code into the R console:
+
+```{r, eval=FALSE}
+install.packages('devtools')
+devtools::install_github("grunwaldlab/oomycetedbtools")
+```
+
+Then start the interactive release process by entering:
+
+```{r, eval=FALSE}
+oomycetedbtools::release()
+```
+
+## What the `release` function does
+
+The `release` function helps to ensure releases of the database are done in a consistent and error-free manner as well as automating most steps to reduce the time and effort needed to make a release.
+It is an interactive function that walks the user through potential problems with the database, how to fix them, and what information is needed.
+The `release` function does this in the following steps:
+
+1. The user will be prompted to enter their Google Drive and Github credentials. This information is needed to edit/read the database spreadsheet and add the release to the `oomycetedbdata` repository on Github.
+1. Validate that the database is formatted correctly, as described in [the database format guide](database_format.html). This will be done in a series of checks. If a check fails, then the user will be given an opportunity to fix the problem and the check will be retried until it passes or the user exits the function.
+1. If any checks failed during the process and the associated problems fixed, either automatically or manually, the entire validation will be repeated to ensure that the fix to one check did not cause a previous one to fail.
+1. The version of the database to be released will be shown to the user for a final manual check and the differences between this release and the last will be shown.
+1. The user will be prompted to provide a description of changes made in this release. This will be displayed publicly with the release.
+1. The user can then choose to upload the release to Github or store a modified version of the `oomycetedbdata` package on their local computer for manual upload.
+
+
+## Plotly test
+
+```{r}
+library(plotly)
+fig <- plot_ly(midwest, x = ~percollege, color = ~state, type = "box")
+fig
+```
+

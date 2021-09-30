@@ -1,0 +1,34 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Date: 
+clipr::write_clip(paste0('## ', format(Sys.time(), "%F (%A %B %e)\n\n")))
+# Date and time:
+clipr::write_clip(paste0('## ', format(Sys.time(), "%F %X %Z (%A %B %e)\n\n")))
+```
+
+## Next Meeting
+
+* I had to redo the unique ID for sequences becuase the ones in the FASTA file I was reformatting are not unique.
+
+```
+> seq_data[duplicated(seq_data$oodb_id), ]
+# A tibble: 11 × 6
+   name                         strain     ncbi_acc ncbi_taxid oodb_id
+   <chr>                        <chr>      <chr>    <chr>        <dbl>
+ 1 Aphanomyces euteiches        MER4       NA       100861          11
+ 2 Phytophthora alni subsp.alni P16203     NA       299391         102
+ 3 Phytophthora andina          P13365     NA       283009         110
+ 4 Phytophthora boehmeriae      CBS 291.29 NA       109152         134
+ 5 Phytophthora cryptogea       P1088      NA       4786           284
+ 6 Phytophthora gemini          P15880     NA       565057         317
+ 7 Phytophthora ipomoeae        P10225     NA       283007         388
+ 8 Phytophthora hibernalis      P3822      NA       175300         597
+ 9 Phytophthora infestans       P10650     NA       4787           598
+10 Pythium rhizoterrae          CBS 146585 MW661036 NA             744
+11 Pythium aquasilvae           CBS 146586 MW661032 NA             745
+```

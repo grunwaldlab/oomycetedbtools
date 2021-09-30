@@ -4,8 +4,8 @@ Title: Tools for managing the OomyceteDB website and database
 Version: 0.1.0
 Author: Zachary SL Foster
 Maintainer: Zachary Foster <zacharyfoster1989@gmail.com>
-Description: Provides functions to update the OomyceteDB website/database and other such tasks 
-License: GPL version 3 or any later version
+Description: Provides functions to update the OomyceteDB website/database and other such tasks.
+License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -16,6 +16,13 @@ Imports:
     stringr,
     taxa,
     rentrez,
-    tibble
-RoxygenNote: 6.1.1
+    tibble,
+    cli,
+    yaml,
+    googlesheets4
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr

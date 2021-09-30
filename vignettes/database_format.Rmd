@@ -1,0 +1,84 @@
+---
+title: "Database format"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Database format}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The ultimate source of the data hosted at OomyceteDB is a single spreadsheet file stored on Google Drive called `oomycetedb_source`.
+However, each time a release is made, the contents of this spreadsheet file are copied to the `oomycetedbdata` package as CSV files and uploaded to Github.
+The releases on Github are then referenced by code running on the [oomycetedb.org](http://www.oomycetedb.org/) website to host the data publicly.
+Since this is all done automatically, it is important that the format of the spreadsheet file on Google Drive is correct.
+One of the main functions of this package is to check that the spreadsheet is formatted correctly before releases are made.
+This document describes the format of the database spreadsheet. 
+
+## Spreadsheet file format
+
+The source file for the database stored on Google Drive is a Google Sheets file called `oomycetedb_source`.
+This is a file format specific to the Google cloud and must be converted to a different format in order to be downloaded.
+Therefore, it is probably best to edit the document online using Google Sheets rather than downloading the file as an Excel or ODF file and uploading, since the conversion might not be perfect.
+The file should have the following sheets, each containing a single table:
+
+1. `sequence_data`: A table with one row per sequence and associated information
+1. `taxon_data`: A table with one row per unique taxonomic ID and associated information
+
+## General table/sheet formatting guidelines
+
+Since the spreadsheet file on Google Drive will generally be edited manually, it is understandable that the person editing it might want to make aesthetic formatting changes to make it more readable and easier to work with.
+However, it is important that any aesthetic formatting not interfere with the ability of the spreadsheet to be read by computers.
+Some changes, such as fonts, colors, cell widths/heights will not cause problems, but other changes will, such as extra columns/rows and merged cells.
+
+Here are some examples of things that can be changed without causing problems:
+
+* Fonts, bold/italic/underlined, etc
+* Column/row width/height
+* Cell coloring/borders
+* Adding new sheets
+* Additional columns
+* Changing the order of rows and columns
+
+These changes **will probably cause problems** and should be avoided:
+
+* Adding extra rows or columns to make the table start some place other than the top left part of the spreadsheet
+* Merging cells
+* Changing the names of required columns, including changes in letter case
+* Changing the name of sheets, including changes in letter case
+* Adding any content (e.g., another table, summary stats, notes, etc) other than the single table for each sheet
+
+## Sequence data column format
+
+The `sequence_data` sheet contains a table with one row per sequence and associated information.
+The following columns are required: 
+
+* `oodb_id`: A **unique** OomyceteDB-specific ID starting with "oodb_". If left blank, sequences will be automatically be assigned a new ID by incrementing the numeric suffix of the largest ID present in any version of the database (e.g., if "oodb_123" is present, the next will be "oodb_124").
+* `name`: The name of the organism, including the genus and species. This is not used in the taxonomic classification and can contain any value. However, if the genus and species name associated with the `taxon_id` does not occur as part of this name, a warning will be displayed during validation.
+* `strain`: Any sub-species-level information. Can be left blank.
+* `genbank_id`: The GenBank accession number for the sequence. This can be left blank for sequences without an accession. If present, this must be a valid GenBank accession number, or validation will fail.
+* `taxon_id`: The taxon ID for the sequence that corresponds to the `taxon_id` column in the `taxon_data` sheet/table. For sequences with a GenBank accession, this should be the NCBI taxon ID associated with the accession. If a different taxon ID is associated with an accession, a warning will be displayed during validation. If left blank, the correct taxon ID will be added automatically using the GenBank accession number during validation. For sequences without a GenBank accession, an OomyceteDB-specific taxon identifier starting with "oodb_tax_" is required and there must be an entry in the "taxon_data" sheet corresponding to this ID. Any values that do not start with "oodb_tax_" must be valid NCBI taxon IDs or validation will fail.
+* `public`: A column with either `TRUE` or `FALSE`, determining whether the sequence will appear in the new releases. Blank cells will be converted to `TRUE` upon validation if a valid GenBank ID is present; otherwise they are converted to `FALSE`.
+* `auto_update`: A column with either `TRUE` or `FALSE`, determining whether the validation script can modify data in this row (e.g. add/update NCBI taxon ID for entries with a GenBank accession). Blank cells will be converted to `TRUE` upon validation.
+* `source`: The source of the sequence and associated data, such as the name of a person, institution, or research project. This can be any value.
+* `notes`: Any miscellaneous notes regarding the sequence. This can be left blank. If a row causes warnings during validation, but cause of this warning is intended (e.g., using a valid NCBI taxon id that is different from the one associated with the GenBank accession), included a justification here. The contents of this cell will be printed with the warning so others seeing the warning know that it is not a problem that needs to be fixed.
+* `sequence`: The sequence, in capital letters representing nucleotides and valid IUPAC ambiguity codes. Any other characters or a blank cell will cause the validation to fail. Lower case letters will be automatically changed to capital letters during validation.
+
+## Taxon data column format
+
+The `taxon_data` sheet contains a table with one row per unique taxonomic ID and associated information.
+All taxon IDs used in the `sequence_data` sheet must be present in this sheet (once for each unique ID), but the information for valid NCBI taxon IDs can be added automatically during validation.
+The following columns are required:
+
+* `taxon_id`: A **unique** taxon ID, either an NCBI taxon id or a OomyceteDB-specific taxon identifier starting with "oodb_tax_". Any values that do not start with "oodb_tax_" must be valid NCBI taxon IDs or validation will fail.
+* `auto_update`: A column with either `TRUE` or `FALSE`, determining whether the validation script can modify data in this row (e.g. add/update NCBI classification based on NCBI taxon ID). Blank cells will be converted to `TRUE` upon validation.
+* `notes`: Any miscellaneous notes regarding the sequence. This can be left blank.
+* `classification`: The full NCBI taxonomic classification, with ranks separated by ";". For OomyceteDB-specific taxon IDs, this should be added manually. Blank cells will cause the validation to fail.
+
+
