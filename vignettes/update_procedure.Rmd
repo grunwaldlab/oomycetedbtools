@@ -50,12 +50,3 @@ The `release` function does this in the following steps:
 1. The user will be prompted to provide a description of changes made in this release. This will be displayed publicly with the release.
 1. The user can then choose to upload the release to Github or store a modified version of the `oomycetedbdata` package on their local computer for manual upload.
 
-
-## Plotly test
-
-```{r}
-library(plotly)
-fig <- plot_ly(midwest, x = ~percollege, color = ~state, type = "box")
-fig
-```
-

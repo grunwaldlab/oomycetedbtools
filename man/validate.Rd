@@ -9,6 +9,7 @@ validate(
   release_path = NULL,
   interactive = TRUE,
   auto_update = FALSE,
+  stop_on_fail = FALSE,
   verbose = TRUE,
   google_user = NULL,
   google_pass = NULL,
@@ -35,6 +36,10 @@ recommended. Default: \code{TRUE}.}
 automated edits to the source database specified by \code{database_path}. Before
 any edits are made, a backup of the file will be made in the same location
 prefixed with ".backup_". Default: \code{FALSE}.}
+
+\item{stop_on_fail}{(\code{TRUE}/\code{FALSE} of length 1) Whether or not to stop the
+validation on the fist failed check. Even when \code{FALSE}, some checks will
+stop the validation when they fail. Default: \code{FALSE}.}
 
 \item{verbose}{(\code{TRUE}/\code{FALSE} of length 1) Print extra information.}
 
