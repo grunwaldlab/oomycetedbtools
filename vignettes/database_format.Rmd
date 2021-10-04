@@ -82,3 +82,13 @@ The following columns are required:
 * `classification`: The full NCBI taxonomic classification, with ranks separated by ";". For OomyceteDB-specific taxon IDs, this should be added manually. Blank cells will cause the validation to fail.
 
 
+## FASTA file format
+
+The FASTA file is generated automatically from the releases of the database, so the user does not need to worry about the details of it format.
+However it is recorded here for reference.
+
+```
+>oodb_id=...|name=...|strain=...|genbank_id=...|taxon_id=...|classification=...
+```
+
+with the `...` replaced with the appropriate content.

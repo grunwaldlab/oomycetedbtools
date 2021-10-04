@@ -60,7 +60,9 @@ validate <- function(
 
   # Look for and apply configuration file by overwriting defaults of unspecified arguments
   #  NOTE: This function modifies variables in this environment as well as returning values
-  arguments <- apply_config_file(config_path)
+  if (! is.null(config_path)) {
+    arguments <- apply_config_file(config_path)
+  }
 
   # Define list of checks to be made
   check_functions <- list(
