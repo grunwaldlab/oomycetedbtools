@@ -73,11 +73,13 @@ This is an interactive function that walks the user through the steps needed
 to add a release of OomyceteDB to the \code{oomycetedbdata} package. The
 \code{oomycetedbdata} package is the source of the data for the OomyceteDB
 website, so this will effectively add a release to the website. This function
-will do the following things: * Validate that the database is formatted
-correctly, as described in \href{database_format.html}{the database format guide}.
+will do the following things:
 \itemize{
+\item Validate that the database is formatted correctly, as described in
+\href{https://grunwaldlab.github.io/oomycetedbtools/articles/database_format.html}{the database format guide}.
 \item Show the version of the database to be released and any changes to the user
-for a manual check. * Either upload the release to Github or store/modify a
+for a manual check.
+\item Upload the release to Github or store/modify a
 version of the \code{oomycetedbdata} package on the local computer for manual
 upload.
 }

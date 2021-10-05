@@ -4,10 +4,12 @@
 #' to add a release of OomyceteDB to the `oomycetedbdata` package. The
 #' `oomycetedbdata` package is the source of the data for the OomyceteDB
 #' website, so this will effectively add a release to the website. This function
-#' will do the following things: * Validate that the database is formatted
-#' correctly, as described in [the database format guide](database_format.html).
+#' will do the following things:
+#' * Validate that the database is formatted correctly, as described in
+#' [the database format guide](https://grunwaldlab.github.io/oomycetedbtools/articles/database_format.html).
 #' * Show the version of the database to be released and any changes to the user
-#' for a manual check. * Either upload the release to Github or store/modify a
+#' for a manual check.
+#' * Upload the release to Github or store/modify a
 #' version of the `oomycetedbdata` package on the local computer for manual
 #' upload.
 #'
@@ -61,6 +63,9 @@ release <- function(
   cli::cli_alert_info("Pulling changes from Github to ensure the repository is up to date.")
   git2r::pull(repo)
 
+  # Authenticate Google
+  googlesheets4::gs4_auth()
+
   # Validate input database format
   if (validate) {
     format_is_valid <- validate(
@@ -79,20 +84,27 @@ release <- function(
   }
 
   # Show differences between this and the last version to the user
+  msg_text <- "Checking for differences between this and the last release"
+  cat(paste0("  ", msg_text, "\r"))
   this_release <- format_release(database_path)
   last_release <- get_last_release(release_history_path)
   if (is.null(last_release)) {
     cli::cli_alert_info("This is the first release")
   } else {
-    compare_releases(this_release, last_release)
-    invisible(readline(prompt="The differences between this release and the last are being displayed. Press [enter] to continue when ready."))
+    if (isTRUE(all.equal(this_release, last_release, check.attributes = FALSE))) {
+      cli::cli_alert_warning("No changes have been made since the last release. Aborting.")
+      return(invisible(FALSE))
+    } else {
+      cat("The differences between this release and the last are being displayed.\n")
+      compare_releases(this_release, last_release)
+      cli::cli_alert_success(msg_text)
+    }
   }
 
   # Ask user for description and spell check description
   if (is.null(description)) {
     repeat {
-      cat('Enter a short description of the changes made for this release. This will be displayed publicly:\n\n')
-      description <- readline('')
+      description <- readline('Enter a short description of the changes made for this release. This will be displayed publicly:\n\n')
 
       # TODO: spell check
 
@@ -136,9 +148,9 @@ release <- function(
 
 
 format_release <- function(database_path) {
-  # Download data from google sheets
-  sequence_data <- googlesheets4::read_sheet(database_path, sheet = "sequence_data")
-  taxon_data <- googlesheets4::read_sheet(database_path, sheet = "taxon_data")
+  # Download data from Google sheets
+  sequence_data <- suppressMessages(googlesheets4::read_sheet(database_path, sheet = "sequence_data"))
+  taxon_data <- suppressMessages(googlesheets4::read_sheet(database_path, sheet = "taxon_data"))
 
   # Remove columns not meant for the public
   sequence_data <- sequence_data[, c("oodb_id", "name", "strain", "genbank_id", "taxon_id", "sequence")]
@@ -146,6 +158,9 @@ format_release <- function(database_path) {
 
   # Combine into a single table
   output <- dplyr::left_join(sequence_data, taxon_data, by = "taxon_id")
+
+  # Convert all columns to character
+  output[] <- lapply(output, as.character)
 
   # Reorder columns
   output[, c("oodb_id", "name", "strain", "genbank_id", "taxon_id",  "classification", "sequence")]
@@ -166,7 +181,7 @@ get_last_release <- function(release_history_path) {
   } else {
     path <- release_history$csv_path[which.max(as.numeric(release_history$release_number))]
     path <- file.path(dirname(release_history_path), path)
-    output <- suppressMessages(readr::read_csv(path))
+    output <- suppressMessages(readr::read_csv(path, col_types = "ccccccc"))
     return(output)
   }
 }
@@ -206,10 +221,12 @@ get_release_data <- function(path = getwd()) {
 compare_releases <- function(release_1, release_2) {
   temp_file_1 <- tempfile()
   temp_file_2 <- tempfile()
-  readr::write_csv(dplyr::select(release_1, oodb_id, name, strain, genbank_id, taxon_id), file = temp_file_1)
-  readr::write_csv(dplyr::select(release_2, oodb_id, name, strain, genbank_id, taxon_id), file = temp_file_2)
-  # readr::write_csv(release_1, file = temp_file_1)
-  # readr::write_csv(release_2, file = temp_file_2)
+  release_1 <- release_1[, c("oodb_id", "name", "strain", "genbank_id", "taxon_id")]
+  release_2 <- release_2[, c("oodb_id", "name", "strain", "genbank_id", "taxon_id")]
+  release_1[] <- lapply(release_1, function(x) ifelse(is.na(x) | x == '', '<NA>', x))
+  release_2[] <- lapply(release_2, function(x) ifelse(is.na(x) | x == '', '<NA>', x))
+  readr::write_csv(release_1, file = temp_file_1)
+  readr::write_csv(release_2, file = temp_file_2)
   old_max_print <- options("max.print")$max.print
   options(max.print=10000)
   print(suppressWarnings(diffobj::diffCsv(temp_file_1, temp_file_2,
