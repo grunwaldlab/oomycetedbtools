@@ -78,3 +78,16 @@ apply_config_file <- function(config_path, ...) {
 
   # Return modified argument list
 }
+
+#' Find the folder with the release files
+#'
+#' Find the folder with the release files
+#'
+#' @param path A path to a folder with a oomycetedbtools config file.
+#'
+#' @export
+find_release_dir <- function(path = getwd()) {
+  apply_config_file(find_config('oomycetedbtools_config.yml', path))
+
+  return(release_path)
+}

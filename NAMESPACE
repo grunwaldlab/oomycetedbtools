@@ -2,5 +2,7 @@
 
 export(config)
 export(find_config)
+export(find_release_dir)
+export(get_release_data)
 export(release)
 export(validate)

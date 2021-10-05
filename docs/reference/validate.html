@@ -134,6 +134,7 @@ problems when hosting the website.</p>
   release_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   interactive <span class='op'>=</span> <span class='cn'>TRUE</span>,
   auto_update <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  stop_on_fail <span class='op'>=</span> <span class='cn'>FALSE</span>,
   verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
   google_user <span class='op'>=</span> <span class='cn'>NULL</span>,
   google_pass <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -170,6 +171,12 @@ recommended. Default: <code>TRUE</code>.</p></td>
 automated edits to the source database specified by <code>database_path</code>. Before
 any edits are made, a backup of the file will be made in the same location
 prefixed with ".backup_". Default: <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>stop_on_fail</th>
+      <td><p>(<code>TRUE</code>/<code>FALSE</code> of length 1) Whether or not to stop the
+validation on the fist failed check. Even when <code>FALSE</code>, some checks will
+stop the validation when they fail. Default: <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>verbose</th>

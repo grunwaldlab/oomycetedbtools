@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get releases spreadsheet — get_release_data • oomycetedbtools</title>
+<title>Get release metadata table — get_release_data • oomycetedbtools</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Get releases spreadsheet — get_release_data" />
-<meta property="og:description" content="Returns the releases spread sheet stored on the server." />
+<meta property="og:title" content="Get release metadata table — get_release_data" />
+<meta property="og:description" content="Return the parsed table of data on the releases." />
 
 
 
@@ -118,30 +118,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get releases spreadsheet</h1>
+    <h1>Get release metadata table</h1>
     
     <div class="hidden name"><code>get_release_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Returns the releases spread sheet stored on the server.</p>
+    <p>Return the parsed table of data on the releases.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_release_data</span><span class='op'>(</span>release_spreadsheet_path <span class='op'>=</span> <span class='va'>config</span><span class='op'>$</span><span class='va'>release_spreadsheet_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_release_data</span><span class='op'>(</span>path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>release_spreadsheet_path</th>
-      <td><p>The path (including the filename) to the version of the release
-spreadsheet on the server releative to the root of the website directory.</p></td>
+      <th>path</th>
+      <td><p>A file path to either the release history CSV or a folder with a oomycetedbtools config file.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>tibble</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

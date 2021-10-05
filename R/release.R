@@ -58,7 +58,6 @@ release <- function(
     print(repo_staus)
     return(invisible(FALSE))
   }
-
   cli::cli_alert_info("Pulling changes from Github to ensure the repository is up to date.")
   git2r::pull(repo)
 
@@ -86,6 +85,7 @@ release <- function(
     cli::cli_alert_info("This is the first release")
   } else {
     compare_releases(this_release, last_release)
+    invisible(readline(prompt="The differences between this release and the last are being displayed. Press [enter] to continue when ready."))
   }
 
   # Ask user for description and spell check description
@@ -105,19 +105,31 @@ release <- function(
   }
 
   # Update database with new release
+  msg_text <- "Creating new release"
+  cat(paste0("  ", msg_text, "\r"))
   release_data <- create_release(release_data = this_release,
                                  release_path = release_path,
                                  release_history_path = release_history_path,
                                  description = description)
+  cli::cli_alert_success(msg_text)
 
   # Rebuild website
-  rmarkdown::render_site(input = repo_path)
+  msg_text <- "Rebuilding website"
+  cat(paste0("  ", msg_text, "\r"))
+  suppressWarnings(rmarkdown::render_site(input = repo_path, quiet = TRUE))
+  cli::cli_alert_success(msg_text)
 
   # Commit and push changes to github
+  msg_text <- "Pushing updates to Github"
+  cat(paste0("  ", msg_text, "\r"))
+  rel_num <- release_data$release_number[which.max(release_data$release_number)]
   git2r::add(repo, path = "*")
-  git2r::commit(repo, message = paste0("Automated release ", release_data$release_number, "\n\n", release_data$description))
+  git2r::commit(repo, message = paste0("Automated release ", max(release_data$release_number), "\n\n",
+                                       release_data$description[which.max(release_data$release_number)]))
   git2r::push(repo)
+  cli::cli_alert_success(msg_text)
 
+  cli::cli_alert_success("\nCreation of new release successful.\n")
   return(invisible(TRUE))
 }
 
@@ -140,21 +152,50 @@ format_release <- function(database_path) {
 }
 
 
-
+#' Get path to latest release
+#'
+#' Get the path to the current release of the database
+#'
+#' @param path A file path to either the release history CSV or a folder with a oomycetedbtools config file.
+#'
+#' @keywords internal
 get_last_release <- function(release_history_path) {
-  release_history <- get_release_history(release_history_path)
+  release_history <- get_release_data(release_history_path)
   if (is.null(release_history)) {
     return(NULL)
   } else {
-    path <- release_history$file_name[which.max(as.numeric(release_history$number))]
-    return(readr::read_csv(path))
+    path <- release_history$csv_path[which.max(as.numeric(release_history$release_number))]
+    path <- file.path(dirname(release_history_path), path)
+    output <- suppressMessages(readr::read_csv(path))
+    return(output)
   }
 }
 
-
-get_release_history <- function(release_history_path) {
-  if (file.exists(release_history_path)) {
-    release_history <- readr::read_csv(release_history_path)
+#' Get release metadata table
+#'
+#' Return the parsed table of data on the releases.
+#'
+#' @param path A file path to either the release history CSV or a folder with a oomycetedbtools config file.
+#'
+#' @export
+get_release_data <- function(path = getwd()) {
+  if (file.exists(path)) {
+    # If the path is to a CSV, then parse that file
+    if (grepl(path, pattern = "\\.csv$")) {
+      release_hist_path <- path
+    }
+    # If the path is to a YAML, then assume it is the config file
+    if (grepl(path, pattern = "\\.yml$")) {
+      config_data <- yaml::read_yaml(path)
+      release_hist_path <- file.path(config_data$release_path, "release_history.csv")
+    }
+    # If it is a folder, look for a config file
+    if (file.info(path)$isdir) {
+      config_data <- yaml::read_yaml(find_config('oomycetedbtools_config.yml', dir_path = path))
+      release_hist_path <- file.path(config_data$release_path, "release_history.csv")
+    }
+    # Parse the CSV
+    release_history <- suppressMessages(readr::read_csv(release_hist_path))
     if (nrow(release_history) > 0) {
       return(release_history)
     }
@@ -163,13 +204,24 @@ get_release_history <- function(release_history_path) {
 }
 
 compare_releases <- function(release_1, release_2) {
-  diffobj::diffCsv(release_1, release_2, pager="auto")
+  temp_file_1 <- tempfile()
+  temp_file_2 <- tempfile()
+  readr::write_csv(dplyr::select(release_1, oodb_id, name, strain, genbank_id, taxon_id), file = temp_file_1)
+  readr::write_csv(dplyr::select(release_2, oodb_id, name, strain, genbank_id, taxon_id), file = temp_file_2)
+  # readr::write_csv(release_1, file = temp_file_1)
+  # readr::write_csv(release_2, file = temp_file_2)
+  old_max_print <- options("max.print")$max.print
+  options(max.print=10000)
+  print(suppressWarnings(diffobj::diffCsv(temp_file_1, temp_file_2,
+                         tar.banner = "New release", cur.banner = "Last release",
+                         pager="auto", mode = "sidebyside")))
+  options(max.print=old_max_print)
 }
 
 
 create_release <- function(release_data, release_path, release_history_path, description) {
   # Update release history
-  release_history <- get_release_history(release_history_path)
+  release_history <- get_release_data(release_history_path)
   if (is.null(release_history)) {
     release_history <- data.frame(release_number = numeric(0),
                                   release_date = character(0),
@@ -201,6 +253,9 @@ create_release <- function(release_data, release_path, release_history_path, des
     paste0(fasta_header_cols, "=", release_data[i, fasta_header_cols], collapse = '|')
   })
   readr::write_lines(paste0('>', header, '\n', release_data$sequence), file = this_rel_path_fasta)
+
+  # Update release history
+  readr::write_csv(release_history, file = release_history_path)
 
   return(invisible(this_rel_data))
 }

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • oomycetedbtools</title>
+<title>Check Genbank IDs — check_genbank_ids • oomycetedbtools</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Check Genbank IDs — check_genbank_ids" />
+<meta property="og:description" content="Checks that Genbank IDs are valid." />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -115,72 +116,58 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Check Genbank IDs</h1>
+    
+    <div class="hidden name"><code>check_genbank_ids.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Checks that Genbank IDs are valid.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>check_genbank_ids</span><span class='op'>(</span>
+  database_path <span class='op'>=</span> <span class='cn'>NULL</span>,
+  release_path <span class='op'>=</span> <span class='cn'>NULL</span>,
+  interactive <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  auto_update <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="config.html">config</a></code> </p>
-        </td>
-        <td><p>Default parameters</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="find_config.html">find_config()</a></code> </p>
-        </td>
-        <td><p>Find config file in a parent directory</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="find_release_dir.html">find_release_dir()</a></code> </p>
-        </td>
-        <td><p>Find the folder with the release files</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_release_data.html">get_release_data()</a></code> </p>
-        </td>
-        <td><p>Get release metadata table</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="release.html">release()</a></code> </p>
-        </td>
-        <td><p>Release a version of the database to the OomyceteDB</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="validate.html">validate()</a></code> </p>
-        </td>
-        <td><p>Validate the source database format</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>database_path</th>
+      <td><p>(<code>character</code> of length 1) The file path or URL to the
+spreadsheet with the sequence and taxonomy data, formatted as described in
+<a href='database_format.html'>the database format guide</a>. Default: <code>NULL</code>, prompt
+user if needed.</p></td>
+    </tr>
+    <tr>
+      <th>release_path</th>
+      <td><p>(<code>character</code> of length 1) The file path or URL to the
+git/github repository the releases are stored in. Default: <code>NULL</code>, prompt
+user if needed.</p></td>
+    </tr>
+    <tr>
+      <th>interactive</th>
+      <td><p>(<code>TRUE</code>/<code>FALSE</code> of length 1) Whether or not to prompt the
+user. This function is designed to be interactive, so <code>TRUE</code> is
+recommended. Default: <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>auto_update</th>
+      <td><p>(<code>TRUE</code>/<code>FALSE</code> of length 1) Whether or not to allow
+automated edits to the source database specified by <code>database_path</code>. Before
+any edits are made, a backup of the file will be made in the same location
+prefixed with ".backup_". Default: <code>FALSE</code>.</p></td>
+    </tr>
     </table>
-  </div>
 
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

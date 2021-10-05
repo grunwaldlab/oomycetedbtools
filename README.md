@@ -2,26 +2,23 @@ oomycetedbtools
 ===============
 
 This is an R package for some of the code used to keep `oomycetedb.org`
-up to date. **This is not a general-use package, ** but you are free to
+up to date. **This is not a general-use package,** but you are free to
 use it and adapt it.
 
-Updating the website
---------------------
+How to use
+----------
 
-The `update_website` function is run each night at 1am using the
-following [cron tab](https://en.wikipedia.org/wiki/Cron):
+There are only a few functions relevant to adding new releases to the
+database, the primary one being `release`. Browse the articles for more
+information on specific subjects.
 
-    0 1 * * * Rscript -e 'oomycetedbtools::update_website()'
+Installing the package
+----------------------
 
-For this to work this package must be installed in R on the system using
-the following command:
+The package is not on CRAN, so it must be installed using `devtools`
+from Github:
 
     devtools::install_github("grunwaldlab/oomycetedbtools")
-
-Since this package is only desinged to update this website in it
-original form, the default parameters for updating the website are
-stored as constants in `R/configuration.R`. Install the package and type
-`?update_website` for more information.
 
 License
 -------

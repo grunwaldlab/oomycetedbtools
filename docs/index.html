@@ -77,15 +77,17 @@
 <div id="oomycetedbtools" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#oomycetedbtools" class="anchor"></a>oomycetedbtools</h1></div>
-<p>This is an R package for some of the code used to keep <code>oomycetedb.org</code> up to date. <strong>This is not a general-use package, </strong> but you are free to use it and adapt it.</p>
-<div id="updating-the-website" class="section level2">
+<p>This is an R package for some of the code used to keep <code>oomycetedb.org</code> up to date. <strong>This is not a general-use package,</strong> but you are free to use it and adapt it.</p>
+<div id="how-to-use" class="section level2">
 <h2 class="hasAnchor">
-<a href="#updating-the-website" class="anchor"></a>Updating the website</h2>
-<p>The <code>update_website</code> function is run each night at 1am using the following <a href="https://en.wikipedia.org/wiki/Cron">cron tab</a>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> <span class="dv">1</span> <span class="sc">*</span> <span class="er">*</span> <span class="er">*</span> Rscript <span class="sc">-</span>e <span class="st">'oomycetedbtools::update_website()'</span></span></code></pre></div>
-<p>For this to work this package must be installed in R on the system using the following command:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"grunwaldlab/oomycetedbtools"</span>)</span></code></pre></div>
-<p>Since this package is only desinged to update this website in it original form, the default parameters for updating the website are stored as constants in <code>R/configuration.R</code>. Install the package and type <code>?update_website</code> for more information.</p>
+<a href="#how-to-use" class="anchor"></a>How to use</h2>
+<p>There are only a few functions relevant to adding new releases to the database, the primary one being <code>release</code>. Browse the articles for more information on specific subjects.</p>
+</div>
+<div id="installing-the-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installing-the-package" class="anchor"></a>Installing the package</h2>
+<p>The package is not on CRAN, so it must be installed using <code>devtools</code> from Github:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"grunwaldlab/oomycetedbtools"</span>)</span></code></pre></div>
 </div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">

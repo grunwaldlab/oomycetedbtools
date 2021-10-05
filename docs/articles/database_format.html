@@ -72,7 +72,7 @@
 
       
 
-      </header><script src="database_format_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><script src="database_format_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Database format</h1>
@@ -160,6 +160,13 @@
 <li>
 <code>classification</code>: The full NCBI taxonomic classification, with ranks separated by “;”. For OomyceteDB-specific taxon IDs, this should be added manually. Blank cells will cause the validation to fail.</li>
 </ul>
+</div>
+<div id="fasta-file-format" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fasta-file-format" class="anchor"></a>FASTA file format</h2>
+<p>The FASTA file is generated automatically from the releases of the database, so the user does not need to worry about the details of it format. However it is recorded here for reference.</p>
+<pre><code>&gt;oodb_id=...|name=...|strain=...|genbank_id=...|taxon_id=...|classification=...</code></pre>
+<p>with the <code>...</code> replaced with the appropriate content.</p>
 </div>
   </div>
 
